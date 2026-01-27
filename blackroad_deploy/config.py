@@ -1,13 +1,33 @@
 """Configuration loading and validation."""
 
 import os
+import re
 import logging
 from typing import Any
 
+import yaml
+
 logger = logging.getLogger(__name__)
 
-# TODO: Add support for environment variable substitution in config values
-# e.g., ${DB_PASSWORD} should be replaced with os.environ.get("DB_PASSWORD")
+
+def _substitute_env_vars(value: Any) -> Any:
+    """
+    Recursively substitute environment variables in config values.
+
+    Supports ${VAR_NAME} syntax for environment variable substitution.
+    """
+    if isinstance(value, str):
+        pattern = r'\$\{([^}]+)\}'
+        matches = re.findall(pattern, value)
+        for var_name in matches:
+            env_value = os.environ.get(var_name, "")
+            value = value.replace(f"${{{var_name}}}", env_value)
+        return value
+    elif isinstance(value, dict):
+        return {k: _substitute_env_vars(v) for k, v in value.items()}
+    elif isinstance(value, list):
+        return [_substitute_env_vars(item) for item in value]
+    return value
 
 
 def load_config(config_path: str) -> dict[str, Any]:
@@ -27,20 +47,27 @@ def load_config(config_path: str) -> dict[str, Any]:
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Config file not found: {config_path}")
 
-    # TODO: Add YAML loading (requires PyYAML dependency)
-    # For now, return a minimal default config
-    logger.warning("YAML loading not implemented, using defaults")
+    try:
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Invalid YAML in config file: {e}")
 
-    return {
+    if config is None:
+        config = {}
+
+    config = _substitute_env_vars(config)
+
+    defaults = {
         "environments": {},
-        "notifications": {
-            "enabled": False,
-        },
-        "health_check": {
-            "timeout": 30,
-            "retries": 3,
-        },
+        "notifications": {"enabled": False},
+        "health_check": {"timeout": 30, "retries": 3},
     }
+    for key, default_value in defaults.items():
+        if key not in config:
+            config[key] = default_value
+
+    return config
 
 
 def validate_config(config: dict) -> list[str]:
