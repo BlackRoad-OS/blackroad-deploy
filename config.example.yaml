@@ -1,0 +1,52 @@
+# BlackRoad Deploy Configuration Example
+# Copy this file to config.yaml and update with your settings
+
+environments:
+  development:
+    host: dev.example.com
+    port: 22
+    user: deploy
+    deploy_path: /var/www/app
+    # ssh_key: ~/.ssh/id_rsa  # Optional: path to SSH private key
+
+  staging:
+    host: staging.example.com
+    port: 22
+    user: deploy
+    deploy_path: /var/www/app
+
+  production:
+    host: prod.example.com
+    port: 22
+    user: deploy
+    deploy_path: /var/www/app
+    # Enable additional safety checks for production
+    require_health_check: true
+    backup_before_deploy: true
+
+notifications:
+  enabled: true
+  # Slack webhook for deployment notifications
+  slack_webhook: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+  # Email notifications (optional)
+  # email:
+  #   smtp_host: smtp.example.com
+  #   smtp_port: 587
+  #   from: deploy@example.com
+  #   to:
+  #     - team@example.com
+
+health_check:
+  # Health check endpoint path
+  endpoint: /health
+  # Timeout in seconds
+  timeout: 30
+  # Number of retries before marking unhealthy
+  retries: 3
+  # Delay between retries in seconds
+  retry_delay: 5
+
+logging:
+  level: INFO
+  # Log file path (optional, logs to stdout if not specified)
+  # file: /var/log/blackroad-deploy.log
