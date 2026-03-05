@@ -79,9 +79,9 @@ class Deployer:
             "version": "unknown",  # TODO: Fetch actual deployed version
         }
 
-        print(f"Environment: {environment}")
-        print(f"Healthy: {health}")
-        print(f"Version: {status_info['version']}")
+        logger.info("Environment: %s", environment)
+        logger.info("Healthy: %s", health)
+        logger.info("Version: %s", status_info["version"])
 
         return status_info
 
