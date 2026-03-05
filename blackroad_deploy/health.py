@@ -33,6 +33,9 @@ class HealthChecker:
             return False
 
         host = env_config.get("host")
+        if not host:
+            logger.error(f"Environment '{environment}' is missing required 'host' configuration")
+            return False
         url = f"https://{host}{self.endpoint}"
 
         logger.info(f"Checking health: {url}")
