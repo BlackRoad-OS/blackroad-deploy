@@ -55,6 +55,11 @@ def load_config(config_path: str) -> dict[str, Any]:
 
     if config is None:
         config = {}
+    elif not isinstance(config, dict):
+        raise ValueError(
+            f"Invalid config structure in '{config_path}': "
+            "top-level YAML value must be a mapping (object)"
+        )
 
     config = _substitute_env_vars(config)
 
