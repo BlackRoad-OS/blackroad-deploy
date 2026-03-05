@@ -31,6 +31,12 @@ class Notifier:
             logger.debug("Notifications disabled, skipping")
             return True
 
+        if not self.slack_webhook and not self.email_config:
+            logger.warning(
+                "Notifications are enabled but no channels are configured "
+                "(no Slack webhook and no email config). No notification was sent."
+            )
+            return False
         success = True
 
         if self.slack_webhook:
