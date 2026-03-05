@@ -48,8 +48,10 @@ class Deployer:
         # TODO: Implement service restart logic
         # Restart application services after deployment (systemd, docker, etc.)
 
-        self.notifier.send(f"Deployment to {environment} completed")
-        return True
+        # Until the above steps are implemented, do not report a successful deployment.
+        raise NotImplementedError(
+            "Deployment steps (SSH, upload, service restart) are not yet implemented"
+        )
 
     def status(self, environment: str) -> dict:
         """
