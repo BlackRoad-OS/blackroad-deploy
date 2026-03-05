@@ -51,7 +51,7 @@ def load_config(config_path: str) -> dict[str, Any]:
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
     except yaml.YAMLError as e:
-        raise ValueError(f"Invalid YAML in config file: {e}")
+        raise ValueError(f"Invalid YAML in config file: {e}") from e
 
     if config is None:
         config = {}
